@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Security group for Nautilus App Servers"
+
+Parameters:
+  DefaultVPC:
+    Type: AWS::EC2::VPC::Id
+    Description: "The default VPC where the SG will be created"
+    Default : vpc-005a68eef154e4de1 # Add you VPC ID here
+
+  AllowedSSHCidr:
+    Type: String
+    Description: "CIDR block for SSH access"
+    Default: "0.0.0.0/0"
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+
+
+Resources:
+  XfusionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: xfusion-sg
+      GroupDescription: "Security group for Nautilus App Servers"
+      VpcId: !Ref DefaultVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: "Allow HTTP traffic from anywhere"
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AllowedSSHCidr
+          Description: "Allow SSH access from specified CIDR"
+      Tags:
+        - Key: Name
+          Value: xfusion-sg
+        - Key: Environment
+          Value: Production
+
+Outputs:
+  SecurityGroupId:
+    Description: "Security Group ID"
+    Value: !Ref XfusionSecurityGroup
