@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-06"
+Description: "Launch an Amazon Linux 2 EC2 instance named xfusion-ec2 with default SG and key pair"
+
+Parameters:
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: xfusion-kp
+    Description: "The EC2 Key Pair to enable SSH access"
+
+Resources:
+  XfusionInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      ImageId: !Ref LatestAmazonLinux2Ami
+      SecurityGroups:
+        - default
+      Tags:
+        - Key: Name
+          Value: xfusion-ec2
+
+  # Use an SSM parameter to always get the latest Amazon Linux 2 AMI
+  LatestAmazonLinux2Ami:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+Outputs:
+  InstanceId:
+    Description: "The Instance ID of the new EC2"
+    Value: !Ref XfusionInstance
+
+  PublicIP:
+    Description: "Public IP Address of the EC2 instance"
+    Value: !GetAtt XfusionInstance.PublicIp
