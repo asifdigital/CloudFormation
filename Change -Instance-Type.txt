@@ -1,0 +1,36 @@
+Get list of instances
+aws ec2 describe-instances \
+  --filters "Name=instance-state-name,Values=running" \
+  --query "Reservations[].Instances[].{ID:InstanceId,Name:Tags[?Key=='Name']|[0].Value,Type:InstanceType,AZ:Placement.AvailabilityZone,PublicIP:PublicIpAddress,State:State.Name}" \
+  --output table
+
+
+#Find the Instance ID called nautilus-ec2
+
+
+
+
+  #before you change anything you need to stop the instance
+
+aws ec2 stop-instances --instance-ids $INSTANCE_ID
+
+#confirm instance stopped
+aws ec2 wait instance-stopped --instance-ids $INSTANCE_ID
+
+#modify to t2.nano
+
+aws ec2 modify-instance-attribute \
+  --instance-id $INSTANCE_ID \
+  --instance-type "{\"Value\": \"t2.nano\"}"
+
+#start the modified instance
+aws ec2 start-instances --instance-ids $INSTANCE_ID
+
+#wait for process to be completed
+aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+
+#Confirm with output 
+aws ec2 describe-instances \
+  --instance-ids $INSTANCE_ID \
+  --query "Reservations[0].Instances[0].[InstanceId,State.Name,InstanceType,PublicIpAddress]" \
+  --output table

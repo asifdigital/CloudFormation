@@ -1,0 +1,21 @@
+#First Findout default VPC
+
+aws ec2 describe-vpcs \
+  --filters "Name=isDefault,Values=true" \
+  --query "Vpcs[0].VpcId" \
+  --output text
+
+  #check subnet ciders
+
+  aws ec2 describe-subnets \
+  --filters "Name=vpc-id,Values=vpc-0c943855bb3bc0ff4" \
+  --query "Subnets[*].{SubnetId:SubnetId,CIDR:CidrBlock,AZ:AvailabilityZone,Name:Tags[?Key=='Name']|[0].Value}" \
+  --output table
+  
+  #Create subnet
+
+  aws ec2 create-subnet \
+  --vpc-id vpc-0c943855bb3bc0ff4 \
+  --cidr-block 172.31.100.0/24 \
+  --availability-zone us-east-1a \
+  --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=devops-subnet}]'

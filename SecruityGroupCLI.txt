@@ -1,0 +1,9 @@
+aws ec2 create-security-group \
+  --group-name xfusion-sg \
+  --description "Security group for Nautilus App Servers" \
+  --vpc-id vpc-005a68eef154e4de1 \
+  --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=xfusion-sg},{Key=Environment,Value=Production}]' \
+  --region us-east-1 && \
+aws ec2 authorize-security-group-ingress \
+  --group-name xfusion-sg \
+  --ip-permissions '[{"IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "IpRanges": [{"CidrIp": "0.0.0.0/0", "Description": "Allow HTTP traffic from anywhere"}]}, {"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges": [{"CidrIp": "0.0.0.0/0", "Description": "Allow SSH access from specified CIDR"}]}]'

@@ -1,0 +1,3 @@
+aws ec2 allocate-address \
+  --domain vpc \
+  --tag-specifications 'ResourceType=elastic-ip,Tags=[{Key=Name,Value=devops-eip}]'

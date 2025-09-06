@@ -1,0 +1,51 @@
+#Create EC2 Instance
+
+#Step 1 Create Key Pair callex xfusion-kp
+
+aws ec2 create-key-pair \
+  --key-name xfusion-kp \
+  --key-type rsa \
+  --query 'KeyMaterial' \
+  --output text > xfusion-kp.pem
+
+# Restrict permissions for the PEM file (important for SSH)
+chmod 400 xfusion-kp.pem
+
+#Find AMI 
+aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2 \
+  --query 'Parameters[0].Value' \
+  --output text
+
+#Note: what is amzn2-ami-hvm-x86_64-gp2
+#amzn2 → Amazon Linux 2 (the OS version).
+#ami → Amazon Machine Image (that’s what you’re launching).
+#hvm → Hardware Virtual Machine (the virtualization type; the modern standard, as opposed to “paravirtual (PV)” which is deprecated).
+#x86_64 → CPU architecture (64-bit Intel/AMD).
+#If you see arm64, that’s for Graviton processors.
+#gp2 → General Purpose SSD (EBS-backed root volume type).
+#You may also see gp3 in newer AMIs.
+
+#or can save the out put in shell variable
+AMI_ID=$(aws ssm get-parameters \
+  --names /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2 \
+  --query 'Parameters[0].Value' \
+  --output text)
+
+
+#get security-group
+SG_ID=$(aws ec2 describe-security-groups \
+  --filters Name=group-name,Values=default \
+  --query "SecurityGroups[0].GroupId" \
+  --output text)
+
+
+#Create EC2 instance called xfusion-ec2 (tag)
+aws ec2 run-instances \
+  --image-id $AMI_ID \
+  --instance-type t2.micro \
+  --key-name xfusion-kp \
+  --security-group-ids $SG_ID \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=xfusion-ec2}]'
+
+

@@ -1,0 +1,5 @@
+aws ec2 create-volume \
+  --availability-zone us-east-1a \
+  --volume-type gp3 \
+  --size 2 \
+  --tag-specifications 'ResourceType=volume,Tags=[{Key=Name,Value=devops-volume}]'
