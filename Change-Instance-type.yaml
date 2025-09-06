@@ -1,0 +1,3 @@
+CloudFormation YAML cannot directly modify an EC2 instance that was created outside of CloudFormation.
+
+So if your nautilus-ec2 instance was launched manually (via console or CLI), CloudFormation doesn’t own it, and therefore cannot change its instance type.
