@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Allocate an Elastic IP named devops-eip"
+
+Resources:
+  DevopsEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: devops-eip
+
+Outputs:
+  ElasticIPAllocationId:
+    Description: "The Allocation ID of the Elastic IP"
+    Value: !Ref DevopsEIP
+
+  ElasticIPAddress:
+    Description: "The Public IP of the Elastic IP"
+    Value: !GetAtt DevopsEIP.PublicIp
