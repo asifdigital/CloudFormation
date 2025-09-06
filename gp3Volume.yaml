@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: "2025-09-03"
 Description: "CloudFormation template to create a gp3 EBS volume"
 
 Resources:

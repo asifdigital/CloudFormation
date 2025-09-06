@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: "2025-09-05"
 Description: "Security group for Nautilus App Servers"
 
 Parameters:
