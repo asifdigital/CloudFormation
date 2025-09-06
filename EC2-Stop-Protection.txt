@@ -1,0 +1,22 @@
+#Find the instance
+
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=xfusion-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+#enable stop protection
+
+aws ec2 modify-instance-attribute \
+  --region us-east-1 \
+  --instance-id $INSTANCE_ID \
+  --disable-api-stop
+# or --no-disable-api-stop both option act as switches and do not need paramaters.
+
+#Verify
+
+aws ec2 describe-instance-attribute \
+  --region us-east-1 \
+  --instance-id $INSTANCE_ID \
+  --attribute disableApiStop
