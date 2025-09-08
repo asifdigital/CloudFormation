@@ -1,0 +1,28 @@
+#Get Instance ID
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=xfusion-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+#Get Volume ID
+VOLUME_ID=$(aws ec2 describe-volumes \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=xfusion-volume" \
+  --query "Volumes[0].VolumeId" \
+  --output text)
+
+#Attache Volume
+aws ec2 attach-volume \
+  --region us-east-1 \
+  --volume-id $VOLUME_ID \
+  --instance-id $INSTANCE_ID \
+  --device /dev/sdb
+
+#Verify Volume 
+aws ec2 describe-volumes \
+  --region us-east-1 \
+  --volume-ids $VOLUME_ID \
+  --query "Volumes[0].Attachments[0].State" \
+  --output text
+

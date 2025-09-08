@@ -1,0 +1,34 @@
+#Find the instance
+
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=datacenter-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+
+#find the ENI ID
+  ENI_ID=$(aws ec2 describe-network-interfaces \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=datacenter-eni" \
+  --query "NetworkInterfaces[0].NetworkInterfaceId" \
+  --output text)
+
+#attach ENI to EC2
+#Every EC2 instance has a primary network interface (created at launch). This always uses device-index 0
+
+ATTACHMENT_ID=$(aws ec2 attach-network-interface \
+  --region us-east-1 \
+  --instance-id $INSTANCE_ID \
+  --network-interface-id $ENI_ID \
+  --device-index 1 \
+  --query AttachmentId \
+  --output text)
+
+#Verify status of ENI
+aws ec2 describe-network-interfaces \
+  --region us-east-1 \
+  --network-interface-ids $ENI_ID \
+  --query "NetworkInterfaces[0].Status" \
+  --output text
+

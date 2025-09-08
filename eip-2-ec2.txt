@@ -1,0 +1,21 @@
+#find the instance id
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=devops-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+#get eip ID
+ALLOCATION_ID=$(aws ec2 describe-addresses \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=devops-ec2-eip" \
+  --query "Addresses[0].AllocationId" \
+  --output text)
+
+#Associate eip 2 EC2
+aws ec2 associate-address \
+  --region us-east-1 \
+  --instance-id $INSTANCE_ID \
+  --allocation-id $ALLOCATION_ID
+
+
