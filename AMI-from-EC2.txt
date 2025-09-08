@@ -1,0 +1,21 @@
+# First get the instance-id of datacenter-ec2
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --region us-east-1 \
+  --filters "Name=tag:Name,Values=datacenter-ec2" \
+  --query "Reservations[0].Instances[0].InstanceId" \
+  --output text)
+
+# Now create the AMI
+aws ec2 create-image \
+  --region us-east-1 \
+  --instance-id $INSTANCE_ID \
+  --name "datacenter-ec2-ami" \
+  --no-reboot
+  --output text
+
+#Verify Availability
+aws ec2 describe-images \
+  --region us-east-1 \
+  --filters "Name=name,Values=datacenter-ec2-ami" \
+  --query "Images[0].State" \
+  --output text
